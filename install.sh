@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cp -r /usr/data/temp/pfc /usr/data/printer_data/config/
-cp -r /usr/data/temp/display /usr/share/klipper/klippy/extras/
+cp -r /usr/data/pfc/pfc /usr/data/printer_data/config/
+cp -r /usr/data/pfc/display /usr/share/klipper/klippy/extras/
 
 # Файл конфигурации
 CONFIG_FILE="/usr/data/printer_data/config/printer.cfg"
