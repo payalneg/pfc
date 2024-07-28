@@ -1,5 +1,3 @@
-markdown
-Копировать код
 # PFC Setup
 
 This guide will walk you through the steps to clone the repository and run the `setup.sh` script.
