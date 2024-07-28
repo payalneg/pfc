@@ -36,8 +36,3 @@ Notes
 Ensure you have the necessary permissions to write to the directories used in the script. Using sudo is recommended to ensure the script has the required privileges.
 Review the script if you need to customize any paths or configurations specific to your environment.
 By following these steps, you will successfully set up the PFC configuration for your environment.
-
-vbnet
-Копировать код
-
-This version uses clear section headings and step-by-step formatting to enhance readability.
