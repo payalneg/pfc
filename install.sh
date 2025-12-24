@@ -22,6 +22,14 @@ else
     echo "Warning: filament_switch_sensor.py not found, skipping"
 fi
 
+# Copy extruder_stepper module
+if [ -f "/usr/data/pfc/extruder_stepper.py" ]; then
+    cp /usr/data/pfc/extruder_stepper.py /usr/share/klipper/klippy/extras/
+    echo "Copied extruder_stepper.py"
+else
+    echo "Warning: extruder_stepper.py not found, skipping"
+fi
+
 CONFIG_FILE="/usr/data/printer_data/config/printer.cfg"
 INCLUDE_STRING_PFC="[include pfc/pfc.cfg]"
 
