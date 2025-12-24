@@ -1,6 +1,6 @@
 # PFC Setup
 
-This guide will walk you through the steps to clone the repository and run the `setup.sh` script.
+This guide will walk you through the steps to clone the repository and run the `install.sh` script.
 
 ## Prerequisites
 
