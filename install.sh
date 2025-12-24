@@ -42,76 +42,101 @@ fi
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Warning: Config file $CONFIG_FILE not found. Skipping parameter updates."
 else
+    # Ask if user wants to update rotation_distance
+    echo ""
+    read -p "Do you want to install/update ROTATION_DISTANCE_DEFAULT (current value: $ROTATION_DISTANCE_DEFAULT)? [y/N]: " UPDATE_ROTATION_DISTANCE
+    UPDATE_ROTATION_DISTANCE=${UPDATE_ROTATION_DISTANCE:-N}
+    
+    # Ask if user wants to update driver_SGTHRS
+    echo ""
+    read -p "Do you want to install/update DRIVER_SGTHRS_DEFAULT (current value: $DRIVER_SGTHRS_DEFAULT)? [y/N]: " UPDATE_DRIVER_SGTHRS
+    UPDATE_DRIVER_SGTHRS=${UPDATE_DRIVER_SGTHRS:-N}
+    
     # Update rotation_distance for stepper_x
-    if grep -q '^\[stepper_x\]' "$CONFIG_FILE"; then
-        if grep -A 15 '^\[stepper_x\]' "$CONFIG_FILE" | grep -q 'rotation_distance:'; then
-            sed -i '/^\[stepper_x\]/,/^\[/{s/^[[:space:]]*rotation_distance:[[:space:]]*.*/rotation_distance: '"$ROTATION_DISTANCE_DEFAULT"'/}' "$CONFIG_FILE"
-        else
-            # Find microsteps line and add after it (only first occurrence in section)
-            awk -v rd="$ROTATION_DISTANCE_DEFAULT" '
-                /^\[stepper_x\]/ {in_section=1; added=0}
-                /^\[/ && !/^\[stepper_x\]/ && in_section {in_section=0}
-                in_section && /^[[:space:]]*microsteps:/ && !added {
-                    print; print "rotation_distance: " rd; added=1; next
-                }
-                {print}
-            ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+    if [ "$UPDATE_ROTATION_DISTANCE" = "y" ] || [ "$UPDATE_ROTATION_DISTANCE" = "Y" ]; then
+        if grep -q '^\[stepper_x\]' "$CONFIG_FILE"; then
+            if grep -A 15 '^\[stepper_x\]' "$CONFIG_FILE" | grep -q 'rotation_distance:'; then
+                sed -i '/^\[stepper_x\]/,/^\[/{s/^[[:space:]]*rotation_distance:[[:space:]]*.*/rotation_distance: '"$ROTATION_DISTANCE_DEFAULT"'/}' "$CONFIG_FILE"
+            else
+                # Find microsteps line and add after it (only first occurrence in section)
+                awk -v rd="$ROTATION_DISTANCE_DEFAULT" '
+                    /^\[stepper_x\]/ {in_section=1; added=0}
+                    /^\[/ && !/^\[stepper_x\]/ && in_section {in_section=0}
+                    in_section && /^[[:space:]]*microsteps:/ && !added {
+                        print; print "rotation_distance: " rd; added=1; next
+                    }
+                    {print}
+                ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+            fi
         fi
-    fi
 
-    # Update rotation_distance for stepper_y
-    if grep -q '^\[stepper_y\]' "$CONFIG_FILE"; then
-        if grep -A 15 '^\[stepper_y\]' "$CONFIG_FILE" | grep -q 'rotation_distance:'; then
-            sed -i '/^\[stepper_y\]/,/^\[/{s/^[[:space:]]*rotation_distance:[[:space:]]*.*/rotation_distance: '"$ROTATION_DISTANCE_DEFAULT"'/}' "$CONFIG_FILE"
-        else
-            # Find microsteps line and add after it (only first occurrence in section)
-            awk -v rd="$ROTATION_DISTANCE_DEFAULT" '
-                /^\[stepper_y\]/ {in_section=1; added=0}
-                /^\[/ && !/^\[stepper_y\]/ && in_section {in_section=0}
-                in_section && /^[[:space:]]*microsteps:/ && !added {
-                    print; print "rotation_distance: " rd; added=1; next
-                }
-                {print}
-            ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        # Update rotation_distance for stepper_y
+        if grep -q '^\[stepper_y\]' "$CONFIG_FILE"; then
+            if grep -A 15 '^\[stepper_y\]' "$CONFIG_FILE" | grep -q 'rotation_distance:'; then
+                sed -i '/^\[stepper_y\]/,/^\[/{s/^[[:space:]]*rotation_distance:[[:space:]]*.*/rotation_distance: '"$ROTATION_DISTANCE_DEFAULT"'/}' "$CONFIG_FILE"
+            else
+                # Find microsteps line and add after it (only first occurrence in section)
+                awk -v rd="$ROTATION_DISTANCE_DEFAULT" '
+                    /^\[stepper_y\]/ {in_section=1; added=0}
+                    /^\[/ && !/^\[stepper_y\]/ && in_section {in_section=0}
+                    in_section && /^[[:space:]]*microsteps:/ && !added {
+                        print; print "rotation_distance: " rd; added=1; next
+                    }
+                    {print}
+                ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+            fi
         fi
+        echo "Updated rotation_distance to $ROTATION_DISTANCE_DEFAULT for stepper_x and stepper_y"
+    else
+        echo "Skipped rotation_distance update"
     fi
 
     # Update driver_SGTHRS for tmc2209 stepper_x
-    if grep -q '^\[tmc2209 stepper_x\]' "$CONFIG_FILE"; then
-        if grep -A 20 '^\[tmc2209 stepper_x\]' "$CONFIG_FILE" | grep -q 'driver_SGTHRS:'; then
-            sed -i '/^\[tmc2209 stepper_x\]/,/^\[/{s/^[[:space:]]*driver_SGTHRS:[[:space:]]*.*/driver_SGTHRS: '"$DRIVER_SGTHRS_DEFAULT"'/}' "$CONFIG_FILE"
-        else
-            # Find diag_pin line and add after it (only first occurrence in section)
-            awk -v sgthrs="$DRIVER_SGTHRS_DEFAULT" '
-                /^\[tmc2209 stepper_x\]/ {in_section=1; added=0}
-                /^\[/ && !/^\[tmc2209 stepper_x\]/ && in_section {in_section=0}
-                in_section && /^[[:space:]]*diag_pin:/ && !added {
-                    print; print "driver_SGTHRS: " sgthrs; added=1; next
-                }
-                {print}
-            ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+    if [ "$UPDATE_DRIVER_SGTHRS" = "y" ] || [ "$UPDATE_DRIVER_SGTHRS" = "Y" ]; then
+        if grep -q '^\[tmc2209 stepper_x\]' "$CONFIG_FILE"; then
+            if grep -A 20 '^\[tmc2209 stepper_x\]' "$CONFIG_FILE" | grep -q 'driver_SGTHRS:'; then
+                sed -i '/^\[tmc2209 stepper_x\]/,/^\[/{s/^[[:space:]]*driver_SGTHRS:[[:space:]]*.*/driver_SGTHRS: '"$DRIVER_SGTHRS_DEFAULT"'/}' "$CONFIG_FILE"
+            else
+                # Find diag_pin line and add after it (only first occurrence in section)
+                awk -v sgthrs="$DRIVER_SGTHRS_DEFAULT" '
+                    /^\[tmc2209 stepper_x\]/ {in_section=1; added=0}
+                    /^\[/ && !/^\[tmc2209 stepper_x\]/ && in_section {in_section=0}
+                    in_section && /^[[:space:]]*diag_pin:/ && !added {
+                        print; print "driver_SGTHRS: " sgthrs; added=1; next
+                    }
+                    {print}
+                ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+            fi
         fi
-    fi
 
-    # Update driver_SGTHRS for tmc2209 stepper_y
-    if grep -q '^\[tmc2209 stepper_y\]' "$CONFIG_FILE"; then
-        if grep -A 20 '^\[tmc2209 stepper_y\]' "$CONFIG_FILE" | grep -q 'driver_SGTHRS:'; then
-            sed -i '/^\[tmc2209 stepper_y\]/,/^\[/{s/^[[:space:]]*driver_SGTHRS:[[:space:]]*.*/driver_SGTHRS: '"$DRIVER_SGTHRS_DEFAULT"'/}' "$CONFIG_FILE"
-        else
-            # Find diag_pin line and add after it (only first occurrence in section)
-            awk -v sgthrs="$DRIVER_SGTHRS_DEFAULT" '
-                /^\[tmc2209 stepper_y\]/ {in_section=1; added=0}
-                /^\[/ && !/^\[tmc2209 stepper_y\]/ && in_section {in_section=0}
-                in_section && /^[[:space:]]*diag_pin:/ && !added {
-                    print; print "driver_SGTHRS: " sgthrs; added=1; next
-                }
-                {print}
-            ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        # Update driver_SGTHRS for tmc2209 stepper_y
+        if grep -q '^\[tmc2209 stepper_y\]' "$CONFIG_FILE"; then
+            if grep -A 20 '^\[tmc2209 stepper_y\]' "$CONFIG_FILE" | grep -q 'driver_SGTHRS:'; then
+                sed -i '/^\[tmc2209 stepper_y\]/,/^\[/{s/^[[:space:]]*driver_SGTHRS:[[:space:]]*.*/driver_SGTHRS: '"$DRIVER_SGTHRS_DEFAULT"'/}' "$CONFIG_FILE"
+            else
+                # Find diag_pin line and add after it (only first occurrence in section)
+                awk -v sgthrs="$DRIVER_SGTHRS_DEFAULT" '
+                    /^\[tmc2209 stepper_y\]/ {in_section=1; added=0}
+                    /^\[/ && !/^\[tmc2209 stepper_y\]/ && in_section {in_section=0}
+                    in_section && /^[[:space:]]*diag_pin:/ && !added {
+                        print; print "driver_SGTHRS: " sgthrs; added=1; next
+                    }
+                    {print}
+                ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+            fi
         fi
+        echo "Updated driver_SGTHRS to $DRIVER_SGTHRS_DEFAULT for tmc2209 stepper_x and stepper_y"
+    else
+        echo "Skipped driver_SGTHRS update"
     fi
 fi
 
+echo ""
 echo "Done"
-echo "Set rotation_distance to $ROTATION_DISTANCE_DEFAULT for stepper_x and stepper_y"
-echo "Set driver_SGTHRS to $DRIVER_SGTHRS_DEFAULT for tmc2209 stepper_x and stepper_y"
+if [ "$UPDATE_ROTATION_DISTANCE" = "y" ] || [ "$UPDATE_ROTATION_DISTANCE" = "Y" ]; then
+    echo "Set rotation_distance to $ROTATION_DISTANCE_DEFAULT for stepper_x and stepper_y"
+fi
+if [ "$UPDATE_DRIVER_SGTHRS" = "y" ] || [ "$UPDATE_DRIVER_SGTHRS" = "Y" ]; then
+    echo "Set driver_SGTHRS to $DRIVER_SGTHRS_DEFAULT for tmc2209 stepper_x and stepper_y"
+fi
 echo "To customize, set ROTATION_DISTANCE and/or DRIVER_SGTHRS environment variables before running this script"

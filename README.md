@@ -13,7 +13,7 @@ Ensure you have the following installed:
 First, clone the repository into the `/usr/data/pfc/` directory. Open a terminal and run the following command:
 
 ```bash
-sudo git clone https://github.com/payalneg/pfc.git /usr/data/pfc/
+git clone https://github.com/payalneg/pfc.git /usr/data/pfc/
 ```
 This command will download the repository contents into the specified directory.
 
